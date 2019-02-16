@@ -40,13 +40,6 @@ process.on('message', async (m) => {
     await startup(m.message.params)
     process.send({ ipcID: m.ipcID, message: {startup: 'SUCCESS'} })
     return
-  // ******* NEW_BLOCK ******* //
-  } else if (m.message.method === constants.NEW_BLOCK_METHOD) {
-    const isSuccessfullyStarted = await blockStore.ingestBlock(m.message)
-    if (!isSuccessfullyStarted) {
-      process.send({ ipcID: m.ipcID, message: 'FAIL' })
-      return
-    } else throw new Error('BlockStore failed to ingest block!')
   // ******* DEPOSIT ******* //
   } else if (m.message.method === constants.DEPOSIT_METHOD) {
     let addDepositRes

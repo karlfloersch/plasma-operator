@@ -18,8 +18,24 @@ async function startup (options) {
   await state.init()
 }
 
+methodCalls = {
+  constants.INIT_METHOD: startup
+  constants.NEW_BLOCK_METHOD: startup
+}
+
 process.on('message', async (m) => {
   log('INCOMING request with method:', m.message.method, 'and rpcID:', m.message.id)
+  let response
+  try {
+    response = await methodCalls[m.message.method](j.message.params)
+  } catch (err) {
+    response = { error: err }
+  }
+  process.send({ ipcID: m.ipcID, message: response })
+
+
+
+
   // ******* INIT ******* //
   if (m.message.method === constants.INIT_METHOD) {
     await startup(m.message.params)
